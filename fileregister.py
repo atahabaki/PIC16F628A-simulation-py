@@ -16,8 +16,8 @@ class FileRegister:
     assign_bits(bits=int)
         Assigns bits to the bits one by one.
 
-    assign_bit(bit=byte/int,index=int)
-        Changes the bit at given index, bits list should be changed.
+    change_bit(bit=int,index=int)
+        Changes the bit
 
     get_bit(index=int)
         Returns the bit at given index.
@@ -41,6 +41,7 @@ class FileRegister:
         bits: int
             Holds information, an array of ints.
             Should contain only 0s and 1s.
+
         name: string
             Name of the fileregister
         """
@@ -57,6 +58,7 @@ class FileRegister:
 
         Parameters
         ----------
+
         index: int
             It's between 0-7 (0 and 7 included).
         """
@@ -70,8 +72,10 @@ class FileRegister:
 
         Parameters
         ----------
+
         bit: int
             It's 0 or 1
+
         index: int
             It's between 0-7 (0 and 7 included).
         """
@@ -96,6 +100,7 @@ class FileRegister:
 
         Parameters
         ----------
+
         index: int
             It's between 0-7 (0 and 7 included).
         """
@@ -111,11 +116,34 @@ class FileRegister:
             bitsstr+=str(self.get_bit(i))
         return bitsstr
 
+    def cycle_between_min_and_max(self,bits=0):
+        """
+        If the bits are bigger than self.__set_bits+1,
+        then it subtracts from self.__set_bits+1
+
+        Parameters
+        ----------
+
+        bits: int
+           Should be between 0-255, if bigger the above sentence/action will do..
+        """
+        if bits >= self.__set_bits:
+            self.bits = self.bits - (self.__set_bits+1)
+            return self.bits
+        else:
+            return bits
+
     def clear_all(self):
+        """
+        Replaces all bits to 0s.
+        """
         self.bits = self.__clear_bits
         return self.bits
 
     def set_all(self):
+        """
+        Replaces all bits to 1s.
+        """
         self.bits = self.__set_bits
         return self.bits
 
@@ -124,7 +152,44 @@ class FileRegister:
         Not tested.
         """
         if bits > self.__set_bits+1:
-            self.__logger.warn("assign_bits","Should not be bigger than 256.")
+            self.__logger.warn("assign_bits",f"Subtracted from {self.__set_bits+1}.")
+            self.cycle_between_min_and_max(self.bits)
         else:
             self.bits=bits
 
+    def rotate_left(self,carry=0):
+        """
+        Rotates left the FileRegister.
+
+        Parameters
+        ----------
+
+        carry: int
+            It's the Carry Flag, and should be 0 or 1
+        """
+        if carry == 1 or carry == 0:
+            self.bits = self.bits << 1
+            self.bits=self.change_bit(index=0,bit=carry)
+            self.cycle_between_min_and_max(self.bits)
+            return self.bits
+        else:
+            self.__logger.warn("rotate_left","Carry should be 0 or 1.")
+            return -1
+
+    def rotate_right(self,carry=0):
+        """
+        Rotates right the FileRegister.
+
+        Parameters
+        ----------
+
+        carry: int
+            It's the Carry Flag, and should be 0 or 1
+        """
+        if carry <= 1 and carry >= 0:
+            self.bits = self.bits >> 1
+            self.bits=self.change_bit(index=7,bit=carry)
+            return self.bits
+        else:
+            self.__logger.warn("rotate_right","Carry should be 0 or 1.")
+            return -1

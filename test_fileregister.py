@@ -67,6 +67,42 @@ class TestFileRegister(unittest.TestCase):
         self.assertEqual(self.fr4.change_bit(1,6),67)
         self.assertEqual(self.fr4.change_bit(0,2),67)
 
+    def test_rotate_left(self):
+        #fr1
+        self.assertEqual(self.fr1.rotate_left(0),26)
+        self.assertEqual(self.fr1.rotate_left(carry=1),53)
+        #fr2
+        self.assertEqual(self.fr2.rotate_left(1),51)
+        self.assertEqual(self.fr2.rotate_left(carry=0),102)
+        #fr3
+        self.assertEqual(self.fr3.rotate_left(0),72)
+        self.assertEqual(self.fr3.rotate_left(0),144)
+        self.assertEqual(self.fr3.rotate_left(carry=0),32)
+        #fr4
+        self.assertEqual(self.fr4.rotate_left(0),134)
+        self.assertEqual(self.fr4.rotate_left(carry=1),13)
+
+    def test_rotate_right(self):
+        #fr1
+        self.assertEqual(self.fr1.rotate_right(0),6)
+        self.assertEqual(self.fr1.rotate_right(carry=1),131)
+        #fr2
+        self.assertEqual(self.fr2.rotate_right(1),140)
+        self.assertEqual(self.fr2.rotate_right(carry=0),70)
+        #fr3
+        self.assertEqual(self.fr3.rotate_right(1),146)
+        self.assertEqual(self.fr3.rotate_right(1),201)
+        self.assertEqual(self.fr3.rotate_right(carry=1),228)
+        self.assertEqual(self.fr3.rotate_right(carry=1),242)
+        self.assertEqual(self.fr3.rotate_right(carry=1),249)
+        self.assertEqual(self.fr3.rotate_right(carry=1),252)
+        self.assertEqual(self.fr3.rotate_right(carry=1),254)
+        self.assertEqual(self.fr3.rotate_right(carry=1),255)
+        self.assertEqual(self.fr3.rotate_right(carry=1),255)
+        #fr4
+        self.assertEqual(self.fr4.rotate_right(0),33)
+        self.assertEqual(self.fr4.rotate_right(carry=1),144)
+
     def test_clear_all(self):
         self.assertEqual(self.fr1.clear_all(),0b00000000)
         self.assertEqual(self.fr2.clear_all(),0b00000000)
