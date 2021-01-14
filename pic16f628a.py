@@ -73,3 +73,87 @@ class PIC16F628A:
         """
         self.Accumulator.bits=k
         return self.Accumulator.bits
+
+    # Mathematical
+
+    def addwf(self,f,d):
+        pass
+
+    def addlw(self,k):
+        pass
+
+    def subwf(self,f,d):
+        pass
+
+    def sublw(self,k):
+        pass
+
+    def incf(self,f,d):
+        pass
+
+    def decf(self,k):
+        pass
+    
+    # Boolean...
+
+    def andlw(self,k):
+        pass
+
+    def andwf(self,f,d):
+        pass
+
+    def iorlw(self,k):
+        pass
+
+    def iorwf(self,f,d):
+        pass
+
+    def xorlw(self,k):
+        pass
+
+    def xorwf(self,f,d):
+        pass
+
+    def comf(self,f,d):
+        pass
+
+    # Misc and other stuff...
+
+    def clrf(self,f):
+        pass
+
+    def clrw(self):
+        pass
+
+    def bcf(self,f,b):
+        pass
+
+    def bsf(self,f,b):
+        pass
+
+    def rrf(self,f,d):
+        pass
+
+    def rlf(self,f,d):
+        pass
+
+    def swapf(self,f,d):
+        pass
+
+    def retlw(self,k):
+        pass
+
+    def nop(self):
+        pass
+
+    def btfsc(self,f,b):
+        pass
+
+    def btfss(self,f,b):
+        pass
+
+    def incfsz(self,f,d):
+        pass
+
+    def decfsz(self,f,d):
+        pass
