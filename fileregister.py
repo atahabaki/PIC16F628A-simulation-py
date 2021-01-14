@@ -7,17 +7,23 @@ class FileRegister:
     Attributes
     ----------
 
-    bits : list
+    bits : int
         Holds information, 8-bit array.
         Contains only 0 and 1 in this list.
 
     Methods
     -------
-    assign_bits(bits=list)
+    assign_bits(bits=int)
         Assigns bits to the bits one by one.
 
-    assign_bit(bit=int,index=int)
+    assign_bit(bit=byte/int,index=int)
         Changes the bit at given index, bits list should be changed.
+
+    get_bit(index=int)
+        Returns the bit at given index.
+
+    get_bits()
+        Returns the bits in binary form (string).
 
     clear_all()
         Resets all bits to 0.
@@ -27,75 +33,98 @@ class FileRegister:
     """
 
 
-    def __init__(self,bits=[0,0,0,0,0,0,0,0],name="Accumulator"):
+    def __init__(self,bits=0,name="Accumulator"):
         """
         Parameters
         ----------
 
-        bits: list
+        bits: int
             Holds information, an array of ints.
             Should contain only 0s and 1s.
+        name: string
+            Name of the fileregister
         """
         self.name=name
         self.__logger = log(name=self.name)
-        self.__clear_bit = 0
-        self.__set_bit = 1
-        self.__len=8
-        if len(bits) == self.__len:
-            self.bits=bits
-        else:
-            self.__logger.warn("__init__",f"The length of the bits should be {self.__len}.")
+        self.__clear_bits = 0b00000000
+        self.__set_bits = 0b11111111
+        self.__max_index = 7
+        self.assign_bits(bits)
 
-    def to_int(self):
+    def __numberAtGivenIndex(self,index=0):
         """
-        Returns corresponding integer value of the bits.
-        """
-        toplam=0
-        for i,val in enumerate(self.bits[::-1]):
-            toplam+=(2**i)*val
-        return toplam
+        Just returns 2**(index)
 
-    def clear_all(self):
+        Parameters
+        ----------
+        index: int
+            It's between 0-7 (0 and 7 included).
         """
-        Assign every cell to 0.
-        """
-        for i in self.bits:
-            i = self.__clear_bit
-            self.__logger.debug("clear_all",f"{i} is set to 0, cleared in another words.")
+        if index > self.__max_index:
+            return -1
+        return 2**index
 
-    def set_all(self):
+    def change_bit(self,bit=0,index=0):
         """
-        Assign every cell to 1.
-        """
-        for i in self.bits:
-            i = self.__set_bit
-            self.__logger.debug("set_all",f"{i} is set to 1, set in another words.")
-
-    def assign_bit(self,bit=0,index=0):
-        """
-        Change the bit to the given index.
+        Changes the bit and returns the bits...
 
         Parameters
         ----------
         bit: int
-            0 or 1
+            It's 0 or 1
         index: int
-            should be between 0-7 (0 and 7 is included.)
+            It's between 0-7 (0 and 7 included).
         """
-        self.bits[index] = bit
-        self.__logger.debug("assign_bit",f"bit changed stored at index {index} to {bit}")
-    
-    def assign_bits(self,bits=[0,0,0,0,0,0,0,0]):
+        if bit == 1:
+            self.bits = self.bits | self.__numberAtGivenIndex(index)
+            return self.bits
+        elif bit == 0:
+            willand=0
+            for i in range(0,self.__max_index+1):
+                if i == index:
+                    continue
+                willand+=self.__numberAtGivenIndex(i)
+            self.bits = self.bits & willand
+            return self.bits
+        else:
+            self.__logger.warn("change_bit","Bit should be 0 or 1.")
+            return -1
+
+    def get_bit(self,index=0):
         """
-        Changes the bits.
+        Just returns the bit at given index (indexing should start from 0)
 
         Parameters
         ----------
-        bits: list
-            change the array.
+        index: int
+            It's between 0-7 (0 and 7 included).
         """
-        if len(bits) == self.__len:
-            self.bits=bits
-            self.__logger.debug("assign_bit",f"The bits changed to {bits}.")
+        norm=self.__numberAtGivenIndex(index)
+        return int((self.bits & norm)/norm)
+
+    def get_bits(self):
+        """
+        Just returns the bits in binary form...
+        """
+        bitsstr=""
+        for i in range(0,self.__max_index+1)[::-1]:
+            bitsstr+=str(self.get_bit(i))
+        return bitsstr
+
+    def clear_all(self):
+        self.bits = self.__clear_bits
+        return self.bits
+
+    def set_all(self):
+        self.bits = self.__set_bits
+        return self.bits
+
+    def assign_bits(self,bits=0):
+        """
+        Not tested.
+        """
+        if bits > self.__set_bits+1:
+            self.__logger.warn("assign_bits","Should not be bigger than 256.")
         else:
-            self.__logger.debug("assign_bits","The length of the bits should be {self.__len}.")
+            self.bits=bits
+
