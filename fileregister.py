@@ -47,8 +47,8 @@ class FileRegister:
         """
         self.name=name
         self.__logger = log(name=self.name)
-        self.__clear_bits = 0b00000000
-        self.__set_bits = 0b11111111
+        self.__clear_bits = 0
+        self.__set_bits = 255
         self.__max_index = 7
         self.assign_bits(bits)
 
@@ -94,6 +94,17 @@ class FileRegister:
             self.__logger.warn("change_bit","Bit should be 0 or 1.")
             return -1
 
+    def ones_complement(self):
+        """
+        Just changes to 1's complement
+        """
+        for i in range(0,self.__max_index+1):
+            if self.get_bit(i) == 0:
+                self.change_bit(1,i)
+            elif self.get_bit(i) == 1:
+                self.change_bit(0,i)
+        return self.bits
+
     def get_bit(self,index=0):
         """
         Just returns the bit at given index (indexing should start from 0)
@@ -127,10 +138,13 @@ class FileRegister:
         bits: int
            Should be between 0-255, if bigger the above sentence/action will do..
         """
-        if bits >= self.__set_bits:
-            self.bits = self.bits - (self.__set_bits+1)
+        if bits >= self.__set_bits+1:
+            self.bits = bits-(self.__set_bits+1)
+            if self.bits >= self.__set_bits+1:
+                self.bits = self.cycle_between_min_and_max(self.bits)
             return self.bits
         else:
+            self.bits = bits
             return bits
 
     def clear_all(self):
@@ -151,11 +165,12 @@ class FileRegister:
         """
         Not tested.
         """
-        if bits > self.__set_bits+1:
+        if bits >= self.__set_bits+1:
             self.__logger.warn("assign_bits",f"Subtracted from {self.__set_bits+1}.")
-            self.cycle_between_min_and_max(self.bits)
+            self.bits=self.cycle_between_min_and_max(bits)
         else:
             self.bits=bits
+        return self.bits
 
     def rotate_left(self,carry=0):
         """
