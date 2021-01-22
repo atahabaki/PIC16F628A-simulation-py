@@ -143,6 +143,11 @@ class FileRegister:
             if self.bits >= self.__set_bits+1:
                 self.bits = self.cycle_between_min_and_max(self.bits)
             return self.bits
+        elif bits < 0:
+            self.bits = self.__set_bits+1 - abs(bits)
+            if self.bits < 0:
+                self.bits = self.cycle_between_min_and_max(self.bits)
+            return self.bits
         else:
             self.bits = bits
             return bits
@@ -167,6 +172,9 @@ class FileRegister:
         """
         if bits >= self.__set_bits+1:
             self.__logger.warn("assign_bits",f"Subtracted from {self.__set_bits+1}.")
+            self.bits=self.cycle_between_min_and_max(bits)
+        elif bits < self.__clear_bits:
+            self.__logger.warn("assign_bits",f"Value is lower than 0... Doing 2's complement...")
             self.bits=self.cycle_between_min_and_max(bits)
         else:
             self.bits=bits
