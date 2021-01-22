@@ -22,7 +22,6 @@ class PIC16F628A:
     movf(f=int,d=int)
         f is the index of a register,
         d is the destination
-
     """
 
 
@@ -77,65 +76,122 @@ class PIC16F628A:
     # Mathematical
 
     def addwf(self,f,d):
-        pass
+        """
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        d: int
+        """
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits + self.Accumulator.bits)
+            #Status bit should change if the result is zero
+            if self.RAM[f].bits == 0:
+                self.StatusFileRegister.change_bit(index=2,bit=1)
+            else:
+                self.StatusFileRegister.change_bit(index=2,bit=0)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits + self.Accumulator.bits)
+            #Status bit should change if the result is zero
+            if self.Accumulator.bits == 0:
+                self.StatusFileRegister.change_bit(index=2,bit=1)
+            else:
+                self.StatusFileRegister.change_bit(index=2,bit=0)
 
     def addlw(self,k):
-        pass
+        self.Accumulator.assign_bits(k + self.Accumulator.bits)
 
     def subwf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits - self.Accumulator.bits)
+            #Status bit should change if the result is zero
+            if self.RAM[f].bits == 0:
+                self.StatusFileRegister.change_bit(index=2,bit=1)
+            else:
+                self.StatusFileRegister.change_bit(index=2,bit=0)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits - self.Accumulator.bits)
+            #Status bit should change if the result is zero
+            if self.Accumulator.bits == 0:
+                self.StatusFileRegister.change_bit(index=2,bit=1)
+            else:
+                self.StatusFileRegister.change_bit(index=2,bit=0)
 
     def sublw(self,k):
-        pass
+        self.Accumulator.assign_bits(k - self.Accumulator.bits)
 
     def incf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits + 1)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits + 1)
 
-    def decf(self,k):
-        pass
+    def decf(self,f,d):
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits-1)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits-1)
     
     # Boolean...
 
     def andlw(self,k):
-        pass
+        self.Accumulator.assign_bits(k & self.Accumulator.bits)
 
     def andwf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits & self.Accumulator.bits)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits & self.Accumulator.bits)
 
     def iorlw(self,k):
-        pass
+        self.Accumulator.assign_bits(k | self.Accumulator.bits)
 
     def iorwf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits | self.Accumulator.bits)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits | self.Accumulator.bits)
 
     def xorlw(self,k):
-        pass
+        self.Accumulator.assign_bits(k ^ self.Accumulator.bits)
 
     def xorwf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits ^ self.Accumulator.bits)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits ^ self.Accumulator.bits)
 
     def comf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].ones_complement())
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].ones_complement())
 
     # Misc and other stuff...
 
     def clrf(self,f):
-        pass
+        self.RAM[f].bits = 0
 
     def clrw(self):
-        pass
+        self.Accumulator.bits = 0
 
     def bcf(self,f,b):
-        pass
+        self.RAM[f].change_bit(index=b,bit=0)
 
     def bsf(self,f,b):
-        pass
+        self.RAM[f].change_bit(index=b,bit=1)
 
     def rrf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].rotate_right()
+        elif d == 0:
+            self.Accumulator.bits = self.Accumulator.bits << 1
 
     def rlf(self,f,d):
-        pass
+        if d == 1:
+            self.RAM[f].rotate_right()
+        elif d == 0:
+            self.Accumulator.bits = self.Accumulator.bits >> 1
 
     def swapf(self,f,d):
         pass
@@ -150,7 +206,10 @@ class PIC16F628A:
         pass
 
     def btfss(self,f,b):
-        pass
+        if self.RAM[f].get_bit(b) == 1:
+            self.skip = True
+        else:
+            self.skip = False
 
     def incfsz(self,f,d):
         pass
