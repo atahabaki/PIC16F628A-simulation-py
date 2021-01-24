@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 class Logger:
     """
     A helper class which just logs...
@@ -21,14 +23,25 @@ class Logger:
         Prints warn message at given topic.
     """
 
-    def __init__(self, name="Logger"):
+    def __init__(self, name="Logger", level=0):
         self.name=name
+        self.level=level
 
-    def debug(self,topic,msg):
-        print(f"[D] {self.name}:{topic}: ${msg}")
+    def __get_current_time(self):
+        return dt.now().strftime("%H:%M:%S")
+
+    def fatal(self,topic,msg):
+        if self.level >= 0:
+            print(f"[F] [{self.__get_current_time()}] {self.name}:{topic}: {msg}")
 
     def info(self,topic,msg):
-        print(f"[I] {self.name}:{topic}: ${msg}")
+        if self.level >= 1:
+            print(f"[I] [{self.__get_current_time()}] {self.name}:{topic}: {msg}")
+
+    def debug(self,topic,msg):
+        if self.level >= 2:
+            print(f"[D] [{self.__get_current_time()}] {self.name}:{topic}: {msg}")
 
     def warn(self,topic,msg):
-        print(f"[W] {self.name}:{topic}: ${msg}")
+        if self.level >= 3:
+            print(f"[W] [{self.__get_current_time()}] {self.name}:{topic}: {msg}")
