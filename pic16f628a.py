@@ -40,6 +40,7 @@ class PIC16F628A:
             FileRegister(name="F36",bits=36),
             FileRegister(name="Status",bits=0)
         ]
+        self.status_index = 5
         self.StatusFileRegister = self.RAM[5]
         self.KCS=0
         self.skipBTFSS=None
