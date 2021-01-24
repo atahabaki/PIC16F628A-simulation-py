@@ -124,7 +124,13 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.Accumulator.bits,2)
 
     def test_iorlw(self):
-        pass
+        self.assertEqual(self.pic16f628a.Accumulator.bits, 0)
+        self.pic16f628a.iorlw(33)
+        self.assertEqual(self.pic16f628a.Accumulator.bits, 33)
+        self.pic16f628a.iorlw(256)
+        self.assertEqual(self.pic16f628a.Accumulator.bits, 33)
+        self.pic16f628a.iorlw(255)
+        self.assertEqual(self.pic16f628a.Accumulator.bits, 255)
 
     def test_iorwf(self):
         pass
