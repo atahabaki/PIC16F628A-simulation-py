@@ -194,7 +194,9 @@ class TestPIC16F628A(unittest.TestCase):
             self.assertEqual(self.pic16f628a.RAM[0].get_bit(i),0)
 
     def test_bsf(self):
-        pass
+        for i in range(0,8):
+            self.pic16f628a.bsf(0,i)
+            self.assertEqual(self.pic16f628a.RAM[0].get_bit(i),1)
 
     def test_rrf(self):
         pass
