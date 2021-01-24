@@ -212,7 +212,9 @@ class PIC16F628A:
         if d == 1:
             self.RAM[f].assign_bits(self.RAM[f].ones_complement())
         elif d == 0:
+            temp=self.RAM[f].bits
             self.Accumulator.assign_bits(self.RAM[f].ones_complement())
+            self.RAM[f].bits=temp
         self.__increase_KCS()
 
     # Misc and other stuff...
