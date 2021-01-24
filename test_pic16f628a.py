@@ -201,20 +201,46 @@ class TestPIC16F628A(unittest.TestCase):
             self.assertIsNotNone(self.pic16f628a.RAM[0].get_bit(i))
 
     def test_rrf(self):
+        def cyc(res):
+            if res > 255:
+                res=res-256
+                if res > 255:
+                    res=cyc(res)
+                return res
+            else:
+                return res
         self.assertEqual(self.pic16f628a.Accumulator.bits,0)
         self.pic16f628a.movlw(32)
         self.assertEqual(self.pic16f628a.RAM[0].bits,32)
         for i in range(0,8):
-            self.assertEqual(self.pic16f628a.Accumulator.bits,32>>i)
+            self.assertEqual(self.pic16f628a.Accumulator.bits,cyc(32>>i))
             self.pic16f628a.rrf(0,0)
-            self.assertEqual(self.pic16f628a.Accumulator.bits,32>>i+1)
+            self.assertEqual(self.pic16f628a.Accumulator.bits,cyc(32>>i+1))
         for i in range(0,8):
-            self.assertEqual(self.pic16f628a.RAM[0].bits,32>>i)
+            self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32>>i))
             self.pic16f628a.rrf(0,1)
-            self.assertEqual(self.pic16f628a.RAM[0].bits,32>>i+1)
+            self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32>>i+1))
 
     def test_rlf(self):
-        pass
+        def cyc(res):
+            if res > 255:
+                res=res-256
+                if res > 255:
+                    res=cyc(res)
+                return res
+            else:
+                return res
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.pic16f628a.movlw(32)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,32)
+        for i in range(0,8):
+            self.assertEqual(self.pic16f628a.Accumulator.bits,cyc(32<<i))
+            self.pic16f628a.rlf(0,0)
+            self.assertEqual(self.pic16f628a.Accumulator.bits,cyc(32<<i+1))
+        for i in range(0,8):
+            self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32<<i))
+            self.pic16f628a.rlf(0,1)
+            self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32<<i+1))
 
     def test_swapf(self):
         self.pic16f628a.RAM[0].assign_bits(198)
