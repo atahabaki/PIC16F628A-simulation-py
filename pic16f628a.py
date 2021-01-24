@@ -249,7 +249,7 @@ class PIC16F628A:
         if d == 1:
             self.RAM[f].rotate_right()
         elif d == 0:
-            self.Accumulator.bits = self.Accumulator.bits << 1
+            self.Accumulator.rotate_right()
         self.__increase_KCS()
 
     def rlf(self,f,d):
