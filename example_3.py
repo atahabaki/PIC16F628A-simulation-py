@@ -15,6 +15,8 @@ pic.decf(sayac,F)
 while True:
     pic.decf(sayac,F)
     pic.decfsz(sayac,F)
+    print(f"Sayac: {pic.RAM[sayac].bits}")
+    print(f"Skip:  {pic.skipDECFSZ}")
     if pic.skipDECFSZ:
         break
     else:
