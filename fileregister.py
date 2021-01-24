@@ -91,7 +91,7 @@ class FileRegister:
             self.bits = self.bits & willand
             return self.bits
         else:
-            self.__logger.warn("change_bit","Bit should be 0 or 1.")
+            self.__logger.debug("change_bit","Bit should be 0 or 1.")
             return -1
 
     def ones_complement(self):
@@ -171,10 +171,10 @@ class FileRegister:
         Not tested.
         """
         if bits >= self.__set_bits+1:
-            self.__logger.warn("assign_bits",f"Subtracted from {self.__set_bits+1}.")
+            self.__logger.debug("assign_bits",f"Subtracted from {self.__set_bits+1}.")
             self.bits=self.cycle_between_min_and_max(bits)
         elif bits < self.__clear_bits:
-            self.__logger.warn("assign_bits",f"Value is lower than 0... Doing 2's complement...")
+            self.__logger.debug("assign_bits",f"Value is lower than 0... Doing 2's complement...")
             self.bits=self.cycle_between_min_and_max(bits)
         else:
             self.bits=bits
@@ -196,7 +196,7 @@ class FileRegister:
             self.cycle_between_min_and_max(self.bits)
             return self.bits
         else:
-            self.__logger.warn("rotate_left","Carry should be 0 or 1.")
+            self.__logger.debug("rotate_left","Carry should be 0 or 1.")
             return -1
 
     def rotate_right(self,carry=0):
@@ -214,5 +214,5 @@ class FileRegister:
             self.bits=self.change_bit(index=7,bit=carry)
             return self.bits
         else:
-            self.__logger.warn("rotate_right","Carry should be 0 or 1.")
+            self.__logger.debug("rotate_right","Carry should be 0 or 1.")
             return -1
