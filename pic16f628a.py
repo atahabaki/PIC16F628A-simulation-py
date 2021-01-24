@@ -65,6 +65,9 @@ class PIC16F628A:
         else:
             self.StatusFileRegister.change_bit(index=2,bit=0)
 
+    def get_zero_flag(self):
+        return self.StatusFileRegister.get_bit(2)
+
     def goto(self):
         """
         Does nothing except increasing the KCS value.
@@ -129,17 +132,11 @@ class PIC16F628A:
         if d == 1:
             self.RAM[f].assign_bits(self.RAM[f].bits + self.Accumulator.bits)
             #Status bit should change if the result is zero
-            if self.RAM[f].bits == 0:
-                self.StatusFileRegister.change_bit(index=2,bit=1)
-            else:
-                self.StatusFileRegister.change_bit(index=2,bit=0)
+            self.__status_zero_flag(self.RAM[f].bits)
         elif d == 0:
             self.Accumulator.assign_bits(self.RAM[f].bits + self.Accumulator.bits)
             #Status bit should change if the result is zero
-            if self.Accumulator.bits == 0:
-                self.StatusFileRegister.change_bit(index=2,bit=1)
-            else:
-                self.StatusFileRegister.change_bit(index=2,bit=0)
+            self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def addlw(self,k):
@@ -150,21 +147,16 @@ class PIC16F628A:
         if d == 1:
             self.RAM[f].assign_bits(self.RAM[f].bits - self.Accumulator.bits)
             #Status bit should change if the result is zero
-            if self.RAM[f].bits == 0:
-                self.StatusFileRegister.change_bit(index=2,bit=1)
-            else:
-                self.StatusFileRegister.change_bit(index=2,bit=0)
+            self.__status_zero_flag(self.RAM[f].bits)
         elif d == 0:
             self.Accumulator.assign_bits(self.RAM[f].bits - self.Accumulator.bits)
             #Status bit should change if the result is zero
-            if self.Accumulator.bits == 0:
-                self.StatusFileRegister.change_bit(index=2,bit=1)
-            else:
-                self.StatusFileRegister.change_bit(index=2,bit=0)
+            self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def sublw(self,k):
         self.Accumulator.assign_bits(k - self.Accumulator.bits)
+        self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def incf(self,f,d):
