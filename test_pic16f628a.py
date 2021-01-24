@@ -69,6 +69,123 @@ class TestPIC16F628A(unittest.TestCase):
         self.pic16f628a.subwf(1,1)
         self.assertEqual(self.pic16f628a.Accumulator.bits,254)
         self.assertEqual(self.pic16f628a.RAM[1].bits,35)
+        self.pic16f628a.RAM[1].assign_bits(254)
+        self.pic16f628a.subwf(1,1)
+        self.assertEqual(self.pic16f628a.RAM[1].bits,0)
+        self.assertEqual(self.pic16f628a.get_zero_flag(),1)
+
+    def test_sublw(self):
+        self.pic16f628a.movlw(10)
+        self.pic16f628a.sublw(10)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.assertEqual(self.pic16f628a.get_zero_flag(),1)
+        self.pic16f628a.sublw(0)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.pic16f628a.movlw(35)
+        self.pic16f628a.sublw(1)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,222)
+        self.pic16f628a.sublw(100)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,134)
+
+    def test_incf(self):
+        self.pic16f628a.RAM[0].assign_bits(255)
+        self.pic16f628a.incf(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,0)
+        self.pic16f628a.incf(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,1)
+
+    def test_decf(self):
+        self.pic16f628a.RAM[0].assign_bits(0)
+        self.pic16f628a.decf(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,255)
+        self.pic16f628a.decf(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,254)
+
+    def test_andlw(self):
+        pass
+
+    def test_andwf(self):
+        pass
+
+    def test_iorlw(self):
+        pass
+
+    def test_iorwf(self):
+        pass
+
+    def test_xorlw(self):
+        pass
+
+    def test_xorwf(self):
+        pass
+
+    def test_comf(self):
+        pass
+
+    def test_clrf(self):
+        pass
+
+    def test_clrw(self):
+        pass
+
+    def test_bcf(self):
+        pass
+
+    def test_bsf(self):
+        pass
+
+    def test_rrf(self):
+        pass
+
+    def test_rlf(self):
+        pass
+
+    def test_swapf(self):
+        self.pic16f628a.RAM[0].assign_bits(198)
+        self.pic16f628a.swapf(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits, 108)
+        self.pic16f628a.RAM[0].assign_bits(15)
+        self.pic16f628a.swapf(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits, 240)
+
+    def test_retlw(self):
+        self.pic16f628a.retlw(256)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.pic16f628a.retlw(2)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,2)
+
+    def test_call(self):
+        self.pic16f628a.call()
+        self.assertEqual(self.pic16f628a.KCS,2)
+
+    def test_goto(self):
+        self.pic16f628a.goto()
+        self.assertEqual(self.pic16f628a.KCS,2)
+
+    def test_nop(self):
+        self.pic16f628a.nop()
+        self.assertEqual(self.pic16f628a.KCS,1)
+
+    def test_btfsc(self):
+        self.pic16f628a.btfsc(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].get_bit(1),0)
+        self.assertEqual(self.pic16f628a.skipBTFSC,True)
+        self.pic16f628a.btfsc(0,5)
+        self.assertEqual(self.pic16f628a.RAM[0].get_bit(5),1)
+        self.assertEqual(self.pic16f628a.skipBTFSC,False)
+
+    def test_btfss(self):
+        self.pic16f628a.btfss(0,5)
+        self.assertEqual(self.pic16f628a.skipBTFSS,True)
+        self.pic16f628a.btfss(0,4)
+        self.assertEqual(self.pic16f628a.skipBTFSS,False)
+        pass
+
+    def test_incfsz(self):
+        pass
+
+    def test_decfsz(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
