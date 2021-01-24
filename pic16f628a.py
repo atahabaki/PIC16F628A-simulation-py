@@ -1,4 +1,5 @@
 from fileregister import FileRegister
+from logger import Logger
 
 class PIC16F628A:
     """
@@ -29,27 +30,57 @@ class PIC16F628A:
         """
         Initializes PIC16F628A...
         """
-        self.StatusFileRegister = FileRegister(name="StatusFileRegister")
         self.Accumulator = FileRegister()
+        self.__log = Logger("PIC16F628A")
         self.RAM = [
             FileRegister(name="F32",bits=32),
             FileRegister(name="F33",bits=33),
             FileRegister(name="F34",bits=34),
             FileRegister(name="F35",bits=35),
-            FileRegister(name="F36",bits=36)
+            FileRegister(name="F36",bits=36),
+            FileRegister(name="Status",bits=0)
         ]
+        self.StatusFileRegister = self.RAM[5]
         self.KCS=0
         self.skipBTFSS=None
+        self.skipBTFSC=None
+        self.skipINCFSZ=None
         self.skipDECFSZ=None
 
     def __increase_KCS(self,inc=1):
         self.KCS+=inc
 
+    def __increase_KCS_if(self,compare_it,which_is_two):
+        self.__log.debug("__increase_KCS_if",f"compare: {compare_it}, two: {which_is_two}")
+        if compare_it == which_is_two:
+            self.__increase_KCS(inc=2)
+            return True
+        else:
+            self.__increase_KCS()
+            return False
+
+    def __status_zero_flag(self,compare_it):
+        if compare_it == 0:
+            self.StatusFileRegister.change_bit(index=2,bit=1)
+        else:
+            self.StatusFileRegister.change_bit(index=2,bit=0)
+
     def goto(self):
+        """
+        Does nothing except increasing the KCS value.
+        """
+        self.__increase_KCS(inc=2)
+
+    def call(self):
+        """
+        Does nothing except increasing the KCS value.
+        """
         self.__increase_KCS(inc=2)
 
     def movf(self,f,d):
         """
+        Moves F to W or F.
+
         Parameters
         ----------
         f: int
@@ -211,6 +242,15 @@ class PIC16F628A:
         self.__increase_KCS()
 
     def rrf(self,f,d):
+        """
+        Rotates right and assign_bits to (W) or (f), according to d value.
+        
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        d: int
+        """
         if d == 1:
             self.RAM[f].rotate_right()
         elif d == 0:
@@ -218,6 +258,15 @@ class PIC16F628A:
         self.__increase_KCS()
 
     def rlf(self,f,d):
+        """
+        Rotates left and assign_bits to (W) or (f), according to d value.
+
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        d: int
+        """
         if d == 1:
             self.RAM[f].rotate_right()
         elif d == 0:
@@ -225,42 +274,98 @@ class PIC16F628A:
         self.__increase_KCS()
 
     def swapf(self,f,d):
-        pass
+        """
+        Swaps 4 bits between right and left, then assigns to W or F,
+        according to d value.
+
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        d: int
+        """
+        left=self.RAM[f].bits & 0b11110000
+        right=self.RAM[f].bits & 0b00001111
+        left >>= 4
+        right <<= 4
+        res = left | right
+        if d == 0:
+            self.Accumulator.assign_bits(res)
+        elif d == 1:
+            self.RAM[f].assign_bits(res)
+        return res
 
     def retlw(self,k):
-        pass
+        """
+        Return with literal (k) to (W) Accumulator.
+        Note: Should break the loop, remember to put break after this.
+        ----------
+        k: int
+            The value of k will be assigned to W (Accumulator).
+        """
+        self.Accumulator.assign_bits(k)
+        return k
 
     def nop(self):
+        """
+        Does nothing, except increasing KCS value.
+        """
         self.__increase_KCS()
 
     def btfsc(self,f,b):
-        pass
+        """
+        Bit test fileregister skip if clear (0).
+
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        b: int
+        """
+        self.skipBTFSC = self.__increase_KCS_if(self.RAM[f].get_bit(b),0)
 
     def btfss(self,f,b):
-        if self.RAM[f].get_bit(b) == 1:
-            self.skipBTFSS = True
-            self.__increase_KCS(inc=2)
-        else:
-            self.skipBTFSS = False
-            self.__increase_KCS()
+        """
+        Bit test fileregister skip if set (1).
+
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        b: int
+        """
+        self.skipBTFSS = self.__increase_KCS_if(self.RAM[f].get_bit(b),1)
 
     def incfsz(self,f,d):
-        pass
+        """
+        Increase the value of F, skip if Zero.
+
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        d: int
+        """
+        if d == 1:
+            self.RAM[f].assign_bits(self.RAM[f].bits+1)
+            self.skipINCFSZ = self.__increase_KCS_if(self.RAM[f].bits,0)
+        elif d == 0:
+            self.Accumulator.assign_bits(self.RAM[f].bits+1)
+            self.skipINCFSZ = self.__increase_KCS_if(self.Accumulator.bits,0)
 
     def decfsz(self,f,d):
+        """
+        Decrease the value of F, skip if Zero.
+
+        Parameters
+        ----------
+        f: int
+            Index of a single RAM unit (a FileRegister)
+        d: int
+        """
         if d == 1:
             self.RAM[f].assign_bits(self.RAM[f].bits-1)
-            if self.RAM[f].bits == 0:
-                self.skipDECFSZ=True
-                self.__increase_KCS(inc=2)
-            else:
-                self.skipDECFSZ=False
-                self.__increase_KCS()
+            self.skipDECFSZ = self.__increase_KCS_if(self.RAM[f].bits,which_is_two=0)
         elif d == 0:
             self.Accumulator.assign_bits(self.RAM[f].bits-1)
-            if self.Accumulator.bits == 0:
-                self.skipDECFSZ=True
-                self.__increase_KCS(inc=2)
-            else:
-                self.skipDECFSZ=False
-                self.__increase_KCS()
+            self.skipDECFSZ = self.__increase_KCS_if(self.Accumulator.bits,which_is_two=0)
