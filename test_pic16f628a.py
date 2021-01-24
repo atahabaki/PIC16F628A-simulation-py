@@ -247,6 +247,7 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.skipBTFSS,False)
 
     def test_incfsz(self):
+        self.assertIsNone(self.pic16f628a.skipINCFSZ,None)
         self.pic16f628a.movlw(255)
         self.pic16f628a.movwf(0)
         self.pic16f628a.incfsz(0,1)
