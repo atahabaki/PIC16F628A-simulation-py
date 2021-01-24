@@ -146,7 +146,16 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.RAM[3].bits,35)
 
     def test_xorlw(self):
-        pass
+        self.pic16f628a.Accumulator.assign_bits(255)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,255)
+        self.pic16f628a.xorlw(16)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,239)
+        self.pic16f628a.xorlw(239)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.pic16f628a.xorlw(0)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.pic16f628a.xorlw(256)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
 
     def test_xorwf(self):
         pass
