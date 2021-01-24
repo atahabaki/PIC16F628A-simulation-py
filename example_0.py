@@ -9,6 +9,7 @@ pic=PIC16F628A()
 
 sayac_id=0
 toplam_id=2
+status=1
 
 sayac = pic.RAM[sayac_id]
 toplam = pic.RAM[toplam_id]
@@ -26,8 +27,10 @@ while True:
     print(f"{i}.Sayac: {sayac.bits}")
     print(f"{i}.Toplam: {toplam.bits}")
     print(f"{i}.36. FR: {pic.RAM[4].bits}\n")
+    pic.btfsc(status,2)
     i+=1
-    if pic.StatusFileRegister.get_bit(2) == 0:
+    #if pic.StatusFileRegister.get_bit(2) == 0:
+    if pic.skipBTFSC:
         pic.movlw(3)
         pic.addwf(sayac_id,F)
     else:
