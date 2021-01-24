@@ -209,9 +209,10 @@ class FileRegister:
         carry: int
             It's the Carry Flag, and should be 0 or 1
         """
-        if carry <= 1 and carry >= 0:
+        if carry == 1 or carry == 0:
             self.bits = self.bits >> 1
             self.bits=self.change_bit(index=7,bit=carry)
+            self.cycle_between_min_and_max(self.bits)
             return self.bits
         else:
             self.__logger.debug("rotate_right","Carry should be 0 or 1.")
