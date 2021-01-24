@@ -201,7 +201,17 @@ class TestPIC16F628A(unittest.TestCase):
             self.assertIsNotNone(self.pic16f628a.RAM[0].get_bit(i))
 
     def test_rrf(self):
-        pass
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
+        self.pic16f628a.movlw(32)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,32)
+        for i in range(0,8):
+            self.assertEqual(self.pic16f628a.Accumulator.bits,32>>i)
+            self.pic16f628a.rrf(0,0)
+            self.assertEqual(self.pic16f628a.Accumulator.bits,32>>i+1)
+        for i in range(0,8):
+            self.assertEqual(self.pic16f628a.RAM[0].bits,32>>i)
+            self.pic16f628a.rrf(0,1)
+            self.assertEqual(self.pic16f628a.RAM[0].bits,32>>i+1)
 
     def test_rlf(self):
         pass
