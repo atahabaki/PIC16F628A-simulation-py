@@ -263,9 +263,9 @@ class PIC16F628A:
         d: int
         """
         if d == 1:
-            self.RAM[f].rotate_right()
+            self.RAM[f].rotate_left()
         elif d == 0:
-            self.Accumulator.bits = self.Accumulator.bits >> 1
+            self.Accumulator.rotate_left()
         self.__increase_KCS()
 
     def swapf(self,f,d):
