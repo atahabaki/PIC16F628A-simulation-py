@@ -102,7 +102,12 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.RAM[0].bits,254)
 
     def test_andlw(self):
-        pass
+        self.pic16f628a.Accumulator.bits=21
+        self.pic16f628a.andlw(41)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,1)
+        self.pic16f628a.Accumulator.bits=255
+        self.pic16f628a.andlw(125)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,125)
 
     def test_andwf(self):
         pass
