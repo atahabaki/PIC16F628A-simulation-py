@@ -183,7 +183,10 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.RAM[2].bits,0)
 
     def test_clrw(self):
-        pass
+        self.pic16f628a.Accumulator.assign_bits(30)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,30)
+        self.pic16f628a.clrw()
+        self.assertEqual(self.pic16f628a.Accumulator.bits,0)
 
     def test_bcf(self):
         pass
