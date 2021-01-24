@@ -247,7 +247,17 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.skipBTFSS,False)
 
     def test_incfsz(self):
-        pass
+        self.pic16f628a.movlw(255)
+        self.pic16f628a.movwf(0)
+        self.pic16f628a.incfsz(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,0)
+        self.assertEqual(self.pic16f628a.skipINCFSZ,True)
+        self.pic16f628a.incfsz(0,0)
+        self.assertEqual(self.pic16f628a.Accumulator.bits,1)
+        self.assertEqual(self.pic16f628a.skipINCFSZ,False)
+        self.pic16f628a.incfsz(0,1)
+        self.assertEqual(self.pic16f628a.RAM[0].bits,1)
+        self.assertEqual(self.pic16f628a.skipINCFSZ,False)
 
     def test_decfsz(self):
         pass
