@@ -245,7 +245,6 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.skipBTFSS,True)
         self.pic16f628a.btfss(0,4)
         self.assertEqual(self.pic16f628a.skipBTFSS,False)
-        pass
 
     def test_incfsz(self):
         pass
