@@ -66,6 +66,12 @@ class FileRegister:
             return -1
         return 2**index
 
+    def get_right_4bits(self):
+        return self.bits & 0b00001111
+
+    def get_left_4bits(self):
+        return self.bits >> 4
+
     def change_bit(self,bit=0,index=0):
         """
         Changes the bit and returns the bits...
