@@ -179,6 +179,7 @@ class PIC16F628A:
 
     def andlw(self,k):
         self.Accumulator.assign_bits(k & self.Accumulator.bits)
+        self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def andwf(self,f,d):
