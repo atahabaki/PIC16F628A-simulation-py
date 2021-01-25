@@ -236,6 +236,7 @@ class PIC16F628A:
 
     def clrf(self,f):
         self.RAM[f].bits = 0
+        self.__status_zero_flag(self.RAM[f].bits)
         self.__increase_KCS()
 
     def clrw(self):
