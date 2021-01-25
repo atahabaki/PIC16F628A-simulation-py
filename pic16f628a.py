@@ -66,6 +66,9 @@ class PIC16F628A:
         else:
             self.StatusFileRegister.change_bit(index=2,bit=0)
 
+    def __set_carry_flag(self,carry=0):
+        self.RAM[self.status_index].change_bit(carry,0)
+
     def get_zero_flag(self):
         return self.StatusFileRegister.get_bit(2)
 
