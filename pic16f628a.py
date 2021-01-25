@@ -142,6 +142,7 @@ class PIC16F628A:
 
     def addlw(self,k):
         self.Accumulator.assign_bits(k + self.Accumulator.bits)
+        self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def subwf(self,f,d):
