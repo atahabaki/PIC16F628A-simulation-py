@@ -147,6 +147,7 @@ class PIC16F628A:
             self.Accumulator.assign_bits(self.RAM[f].bits + self.Accumulator.bits)
             #Status bit should change if the result is zero
             self.__status_zero_flag(self.Accumulator.bits)
+        self.__carry_flag(self.Accumulator.bits+self.RAM[f].bits)
         self.__increase_KCS()
 
     def addlw(self,k):
