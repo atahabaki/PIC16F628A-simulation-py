@@ -241,6 +241,7 @@ class PIC16F628A:
 
     def clrw(self):
         self.Accumulator.bits = 0
+        self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def bcf(self,f,b):
