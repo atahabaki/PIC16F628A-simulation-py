@@ -92,9 +92,9 @@ class PIC16F628A:
         d: int
         """
         if d == 1:
-            self.RAM[f].bits = self.RAM[f].bits
+            self.RAM[f].assign_bits(self.RAM[f].bits)
         elif d == 0:
-            self.Accumulator.bits = self.RAM[f].bits
+            self.Accumulator.assign_bits(self.RAM[f].bits)
         self.__increase_KCS()
         return self.RAM[f].bits
 
