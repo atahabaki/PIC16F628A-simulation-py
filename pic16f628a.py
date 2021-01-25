@@ -69,6 +69,10 @@ class PIC16F628A:
     def __set_carry_flag(self,carry=0):
         self.RAM[self.status_index].change_bit(carry,0)
 
+    def __carry_flag(self,compare_it):
+        if compare_it > 255:
+            self.__set_carry_flag(1)
+
     def get_zero_flag(self):
         return self.StatusFileRegister.get_bit(2)
 
@@ -147,6 +151,7 @@ class PIC16F628A:
 
     def addlw(self,k):
         self.Accumulator.assign_bits(k + self.Accumulator.bits)
+        self.__carry_flag(self.Accumulator.bits+k)
         self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
