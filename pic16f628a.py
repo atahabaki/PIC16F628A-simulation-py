@@ -169,6 +169,10 @@ class PIC16F628A:
         self.__increase_KCS()
 
     def subwf(self,f,d):
+        if self.RAM[f].bits - self.Accumulator.get_right_4bits() < 0:
+            self.__set_dc_flag(0)
+        else:
+            self.__set_dc_flag(1)
         if d == 1:
             self.RAM[f].assign_bits(self.RAM[f].bits - self.Accumulator.bits)
             #Status bit should change if the result is zero
