@@ -278,8 +278,10 @@ class PIC16F628A:
         d: int
         """
         if d == 1:
+            self.__set_carry_flag(self.RAM[f].get_bit(0))
             self.RAM[f].rotate_right()
         elif d == 0:
+            self.__set_carry_flag(self.Accumulator.get_bit(0))
             self.Accumulator.rotate_right()
         self.__increase_KCS()
 
