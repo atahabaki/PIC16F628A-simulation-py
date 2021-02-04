@@ -57,6 +57,9 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.Accumulator.bits,48)
         self.pic16f628a.addlw(3)
         self.assertEqual(self.pic16f628a.Accumulator.bits,51)
+        self.pic16f628a.Accumulator.assign_bits(15)
+        self.pic16f628a.addlw(3)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
 
     def test_subwf(self):
         self.pic16f628a.movlw(10)
