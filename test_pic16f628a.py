@@ -105,6 +105,15 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.Accumulator.bits,222)
         self.pic16f628a.sublw(100)
         self.assertEqual(self.pic16f628a.Accumulator.bits,134)
+        self.pic16f628a.Accumulator.assign_bits(3)
+        self.pic16f628a.sublw(2)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
+        self.pic16f628a.Accumulator.assign_bits(2)
+        self.pic16f628a.sublw(2)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
+        self.pic16f628a.Accumulator.assign_bits(1)
+        self.pic16f628a.sublw(2)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),0)
 
     def test_incf(self):
         self.pic16f628a.RAM[0].assign_bits(255)
