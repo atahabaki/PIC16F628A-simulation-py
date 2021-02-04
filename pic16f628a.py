@@ -158,6 +158,11 @@ class PIC16F628A:
         self.__increase_KCS()
 
     def addlw(self,k):
+        right_4bits = k & 0b00001111
+        if right_4bits + self.Accumulator.get_right_4bits() > 15:
+            self.__set_dc_flag(1)
+        else:
+            self.__set_dc_flag(0)
         self.Accumulator.assign_bits(k + self.Accumulator.bits)
         self.__carry_flag(self.Accumulator.bits+k)
         self.__status_zero_flag(self.Accumulator.bits)
