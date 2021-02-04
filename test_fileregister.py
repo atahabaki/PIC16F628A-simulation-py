@@ -132,6 +132,18 @@ class TestFileRegister(unittest.TestCase):
         self.assertEqual(self.fr3.assign_bits(283),27)
         self.assertEqual(self.fr4.assign_bits(512),0)
         self.assertEqual(self.fr4.assign_bits(540),28)
+
+    def test_get_right_4bits(self):
+        self.assertEqual(self.fr1.get_right_4bits(),13)
+        self.assertEqual(self.fr2.get_right_4bits(),9)
+        self.assertEqual(self.fr3.get_right_4bits(),4)
+        self.assertEqual(self.fr4.get_right_4bits(),3)
+
+    def test_get_left_4bits(self):
+        self.assertEqual(self.fr1.get_left_4bits(),0)
+        self.assertEqual(self.fr2.get_left_4bits(),1)
+        self.assertEqual(self.fr3.get_left_4bits(),2)
+        self.assertEqual(self.fr4.get_left_4bits(),4)
     
 if __name__=="__main__":
     unittest.main()

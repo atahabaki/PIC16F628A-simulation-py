@@ -45,6 +45,10 @@ class TestPIC16F628A(unittest.TestCase):
         self.pic16f628a.addwf(2,1)
         self.assertEqual(self.pic16f628a.RAM[2].bits,18)
         self.assertEqual(self.pic16f628a.Accumulator.bits,240)
+        self.pic16f628a.RAM[3].assign_bits(15)
+        self.pic16f628a.Accumulator.assign_bits(3)
+        self.pic16f628a.addwf(3,0)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
 
     def test_addlw(self):
         self.pic16f628a.addlw(280)
@@ -53,6 +57,9 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.Accumulator.bits,48)
         self.pic16f628a.addlw(3)
         self.assertEqual(self.pic16f628a.Accumulator.bits,51)
+        self.pic16f628a.Accumulator.assign_bits(15)
+        self.pic16f628a.addlw(3)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
 
     def test_subwf(self):
         self.pic16f628a.movlw(10)
@@ -73,6 +80,18 @@ class TestPIC16F628A(unittest.TestCase):
         self.pic16f628a.subwf(1,1)
         self.assertEqual(self.pic16f628a.RAM[1].bits,0)
         self.assertEqual(self.pic16f628a.get_zero_flag(),1)
+        self.pic16f628a.RAM[2].assign_bits(3)
+        self.pic16f628a.Accumulator.assign_bits(2)
+        self.pic16f628a.subwf(2,1)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
+        self.pic16f628a.RAM[2].assign_bits(2)
+        self.pic16f628a.Accumulator.assign_bits(2)
+        self.pic16f628a.subwf(2,1)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
+        self.pic16f628a.RAM[2].assign_bits(1)
+        self.pic16f628a.Accumulator.assign_bits(2)
+        self.pic16f628a.subwf(2,1)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),0)
 
     def test_sublw(self):
         self.pic16f628a.movlw(10)
@@ -86,6 +105,15 @@ class TestPIC16F628A(unittest.TestCase):
         self.assertEqual(self.pic16f628a.Accumulator.bits,222)
         self.pic16f628a.sublw(100)
         self.assertEqual(self.pic16f628a.Accumulator.bits,134)
+        self.pic16f628a.Accumulator.assign_bits(3)
+        self.pic16f628a.sublw(2)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
+        self.pic16f628a.Accumulator.assign_bits(2)
+        self.pic16f628a.sublw(2)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
+        self.pic16f628a.Accumulator.assign_bits(1)
+        self.pic16f628a.sublw(2)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),0)
 
     def test_incf(self):
         self.pic16f628a.RAM[0].assign_bits(255)
@@ -220,6 +248,10 @@ class TestPIC16F628A(unittest.TestCase):
             self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32>>i))
             self.pic16f628a.rrf(0,1)
             self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32>>i+1))
+        self.pic16f628a.RAM[1].assign_bits(1)
+        self.pic16f628a.rrf(1,1)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(0),1)
+        self.assertEqual(self.pic16f628a.RAM[1].bits,0)
 
     def test_rlf(self):
         def cyc(res):
@@ -241,6 +273,10 @@ class TestPIC16F628A(unittest.TestCase):
             self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32<<i))
             self.pic16f628a.rlf(0,1)
             self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32<<i+1))
+        self.pic16f628a.RAM[1].assign_bits(128)
+        self.pic16f628a.rlf(1,1)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(0),1)
+        self.assertEqual(self.pic16f628a.RAM[1].bits,0)
 
     def test_swapf(self):
         self.pic16f628a.RAM[0].assign_bits(198)

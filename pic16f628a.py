@@ -66,6 +66,16 @@ class PIC16F628A:
         else:
             self.StatusFileRegister.change_bit(index=2,bit=0)
 
+    def __set_carry_flag(self,carry=0):
+        self.RAM[self.status_index].change_bit(carry,0)
+
+    def __carry_flag(self,compare_it):
+        if compare_it > 255:
+            self.__set_carry_flag(1)
+
+    def __set_dc_flag(self,dc=0):
+        self.RAM[self.status_index].change_bit(dc,1)
+
     def get_zero_flag(self):
         return self.StatusFileRegister.get_bit(2)
 
@@ -140,14 +150,29 @@ class PIC16F628A:
             self.Accumulator.assign_bits(self.RAM[f].bits + self.Accumulator.bits)
             #Status bit should change if the result is zero
             self.__status_zero_flag(self.Accumulator.bits)
+        if self.RAM[f].get_right_4bits() + self.Accumulator.get_right_4bits() > 15:
+            self.__set_dc_flag(1)
+        else:
+            self.__set_dc_flag(0)
+        self.__carry_flag(self.Accumulator.bits+self.RAM[f].bits)
         self.__increase_KCS()
 
     def addlw(self,k):
+        right_4bits = k & 0b00001111
+        if right_4bits + self.Accumulator.get_right_4bits() > 15:
+            self.__set_dc_flag(1)
+        else:
+            self.__set_dc_flag(0)
         self.Accumulator.assign_bits(k + self.Accumulator.bits)
+        self.__carry_flag(self.Accumulator.bits+k)
         self.__status_zero_flag(self.Accumulator.bits)
         self.__increase_KCS()
 
     def subwf(self,f,d):
+        if self.RAM[f].bits - self.Accumulator.get_right_4bits() < 0:
+            self.__set_dc_flag(0)
+        else:
+            self.__set_dc_flag(1)
         if d == 1:
             self.RAM[f].assign_bits(self.RAM[f].bits - self.Accumulator.bits)
             #Status bit should change if the result is zero
@@ -156,11 +181,18 @@ class PIC16F628A:
             self.Accumulator.assign_bits(self.RAM[f].bits - self.Accumulator.bits)
             #Status bit should change if the result is zero
             self.__status_zero_flag(self.Accumulator.bits)
+        self.__carry_flag(self.RAM[f].bits-self.Accumulator.bits)
         self.__increase_KCS()
 
     def sublw(self,k):
+        right_4bits = k & 0b00001111
+        if right_4bits - self.Accumulator.get_right_4bits() <= 0:
+            self.__set_dc_flag(1)
+        else:
+            self.__set_dc_flag(0)
         self.Accumulator.assign_bits(k - self.Accumulator.bits)
         self.__status_zero_flag(self.Accumulator.bits)
+        self.__carry_flag(k - self.Accumulator.bits)
         self.__increase_KCS()
 
     def incf(self,f,d):
@@ -267,8 +299,10 @@ class PIC16F628A:
         d: int
         """
         if d == 1:
+            self.__set_carry_flag(self.RAM[f].get_bit(0))
             self.RAM[f].rotate_right()
         elif d == 0:
+            self.__set_carry_flag(self.Accumulator.get_bit(0))
             self.Accumulator.rotate_right()
         self.__increase_KCS()
 
@@ -283,8 +317,10 @@ class PIC16F628A:
         d: int
         """
         if d == 1:
+            self.__set_carry_flag(self.RAM[f].get_bit(7))
             self.RAM[f].rotate_left()
         elif d == 0:
+            self.__set_carry_flag(self.Accumulator.get_bit(7))
             self.Accumulator.rotate_left()
         self.__increase_KCS()
 
