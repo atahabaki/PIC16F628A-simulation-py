@@ -241,6 +241,10 @@ class TestPIC16F628A(unittest.TestCase):
             self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32<<i))
             self.pic16f628a.rlf(0,1)
             self.assertEqual(self.pic16f628a.RAM[0].bits,cyc(32<<i+1))
+        self.pic16f628a.RAM[1].assign_bits(128)
+        self.pic16f628a.rlf(1,1)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(0),1)
+        self.assertEqual(self.pic16f628a.RAM[1].bits,0)
 
     def test_swapf(self):
         self.pic16f628a.RAM[0].assign_bits(198)
