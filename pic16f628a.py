@@ -73,6 +73,9 @@ class PIC16F628A:
         if compare_it > 255:
             self.__set_carry_flag(1)
 
+    def __set_dc_flag(self,dc=0):
+        self.RAM[self.status_index].change_bit(dc,1)
+
     def get_zero_flag(self):
         return self.StatusFileRegister.get_bit(2)
 
@@ -147,6 +150,10 @@ class PIC16F628A:
             self.Accumulator.assign_bits(self.RAM[f].bits + self.Accumulator.bits)
             #Status bit should change if the result is zero
             self.__status_zero_flag(self.Accumulator.bits)
+        if self.RAM[f].get_right_4bits() + self.Accumulator.get_right_4bits() > 15:
+            self.__set_dc_flag(1)
+        else:
+            self.__set_dc_flag(0)
         self.__carry_flag(self.Accumulator.bits+self.RAM[f].bits)
         self.__increase_KCS()
 
