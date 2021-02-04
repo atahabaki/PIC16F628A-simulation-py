@@ -45,6 +45,10 @@ class TestPIC16F628A(unittest.TestCase):
         self.pic16f628a.addwf(2,1)
         self.assertEqual(self.pic16f628a.RAM[2].bits,18)
         self.assertEqual(self.pic16f628a.Accumulator.bits,240)
+        self.pic16f628a.RAM[3].assign_bits(15)
+        self.pic16f628a.Accumulator.assign_bits(3)
+        self.pic16f628a.addwf(3,0)
+        self.assertEqual(self.pic16f628a.StatusFileRegister.get_bit(1),1)
 
     def test_addlw(self):
         self.pic16f628a.addlw(280)
